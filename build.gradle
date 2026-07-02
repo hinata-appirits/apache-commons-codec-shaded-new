@@ -1,0 +1,54 @@
+// This gradle file fetches commons-codec from mavenCentral, applies shadowing, and installs the result to the local Maven repository.
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+def ccGroupId = 'commons-codec'
+def ccArtifactId = ccGroupId
+def ccsArtifactId = ccArtifactId + '-shaded'
+def ccVersion = '1.11'
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+dependencies {
+    compile ccGroupId + ':' + ccArtifactId + ':' + ccVersion
+}
+
+shadowJar {
+    relocate 'org.apache.commons.codec', 'shaded.org.apache.commons.codec'
+    baseName = ccsArtifactId
+    version = ccVersion
+    classifier = null
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) { publication ->
+            groupId ccGroupId
+            artifactId ccsArtifactId
+            version ccVersion
+            project.shadow.component(publication)
+        }
+    }
+    repositories {
+        maven {
+            mavenLocal()
+        }
+    }
+}
+
+defaultTasks 'publishToMavenLocal'
