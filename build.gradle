@@ -38,8 +38,8 @@ shadowJar {
 publishing {
     publications {
         shadow(MavenPublication) { publication ->
-            groupId ccGroupId
-            artifactId ccsArtifactId
+            groupId 'com.github.hinata-appirits'
+            artifactId 'apache-commons-codec-shaded-new'
             version ccVersion
             project.shadow.component(publication)
         }
